@@ -1,0 +1,11 @@
+{
+  "name": "trabalho-ia",
+  "version": "1.0.0",
+  "description": "1º Trabalho de Inteligência Artificial",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+}
+}
