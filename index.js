@@ -63,7 +63,7 @@ function executarBFS(quantidade){
   //console.log(quantidade);
   embaralharCubo(cuboInicio, quantidade);
 
-  console.log('Cubo após embaralhar:');
+  console.log('\nCubo após embaralhar:');
   printCubo(cuboInicio.asString());
 
   // Executar BFS
@@ -99,7 +99,7 @@ function embaralharCubo(cube, n) {
     moves.push(move);
   }
 
-  console.log(`Cubo embaralhado com os movimentos: ${moves.join(' ')}`);
+  console.log(`\nCubo embaralhado com os movimentos: ${moves.join(' ')}`);
 }
 
 function resolverCubo(cube, passos) {
