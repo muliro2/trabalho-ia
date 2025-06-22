@@ -4,8 +4,10 @@
   "description": "1º Trabalho de Inteligência Artificial",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "startk": "node index.js"
   },
   "dependencies": {
-}
+    "chalk": "^4.1.2",
+    "queue-fifo": "^0.2.6"
+  }
 }
