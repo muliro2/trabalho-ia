@@ -218,5 +218,6 @@ function iniciarSolucionador() {
 
 module.exports = {
   iniciarSolucionador
+  
 };
 
