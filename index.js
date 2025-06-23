@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const readline = require('readline');
 require('./cubejs/lib/solve');
 const bfs = require('./bfs');
+const { iniciarSolucionador } = require('./buscaProfundidade');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,13 +21,17 @@ function mostrarMenu() {
   console.clear();
   console.log('=== MENU RUBIK ===');
   console.log('1 - Resolver com BFS');
-  console.log('2 - Sair');
+  console.log('2 - Resolver com  Busca em Profundidade');
+  console.log('3 - Sair');
   rl.question('\nEscolha uma opção: ', (resposta) => {
     switch (resposta.trim()) {
       case '1':
         perguntarQuantidadeMovimentos();
         break;
       case '2':
+        iniciarSolucionador();;
+        break;
+      case '3':
         console.log('\nSaindo do programa...');
         rl.close();
         process.exit(0);
