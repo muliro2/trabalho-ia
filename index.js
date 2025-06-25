@@ -1,9 +1,10 @@
 const Cube = require('./cubejs/src/cube');
 const chalk = require('chalk');
 const readline = require('readline');
+const prompt = require('prompt-sync')();
 require('./cubejs/lib/solve');
 const bfs = require('./bfs');
-const { iniciarSolucionador } = require('./buscaProfundidade');
+const { buscaEmProfundidadeIterativa } = require('./buscaProfundidade'); 
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -28,7 +29,7 @@ function mostrarMenu() {
         perguntarQuantidadeMovimentos();
         break;
       case '2':
-        iniciarSolucionador();;
+        menuBuscaProfundidade();
         break;
       case '3':
         console.log('\nSaindo do programa...');
@@ -148,4 +149,77 @@ function printCubo(cubeString) {
 
   console.log('\nFace DOWN:');
   printFace(faces.D);
+}
+
+function menuBuscaProfundidade() {
+  console.log("\n--- Menu Busca em Profundidade ---");
+  console.log("(1) Modo Incremental (1 a N movimentos)");
+  console.log("(2) Modo Randomizado");
+  console.log("(3) Voltar ao menu inicial");
+  const perguntaCaso = prompt("Escolha o modo: ");
+  
+  switch (perguntaCaso) {
+    case '1':
+      const numMovimentos = prompt("Digite a quantidade máxima de movimentos para testar: ");
+      const max = parseInt(numMovimentos);
+      if (isNaN(max) || max <= 0) {
+        console.log("Número inválido. Voltando ao menu.");
+        setTimeout(mostrarMenu, 1500);
+      } else {
+        executarBuscaIterativa(max);
+      }
+      break;
+    case '2':
+      console.log("Modo Randomizado ainda não implementado neste menu.");
+      setTimeout(menuBuscaProfundidade, 1500);
+      break;
+    case '3':
+      mostrarMenu();
+      break;
+    default:
+      console.log("Opção inválida.");
+      setTimeout(menuBuscaProfundidade, 1500);
+      break;
+  }
+}
+
+function executarBuscaIterativa(maxMovimentos) {
+  const { obterNomeDoMovimento } = require('./buscaProfundidade.js');
+
+  for (let i = 1; i <= maxMovimentos; i++) {
+    console.log("-----------------------------------------------------------------------------------");
+    
+    const cubo = new Cube(); 
+    
+    console.log('\nCubo resolvido inicial:');
+    printCubo(cubo.asString()); 
+    
+    console.log(`\n\nQuantidade de movimentos para embaralhar: ${i}`);
+    
+    let movimentosDeEmbaralhamento = [];
+    for (let j = 0; j < i; j++) {
+        const movimentoAleatorio = Math.floor(Math.random() * 18);
+        movimentosDeEmbaralhamento.push(obterNomeDoMovimento(movimentoAleatorio));
+        cubo.move(movimentoAleatorio);
+    }
+
+    console.log(`\nCubo embaralhado com os movimentos: ${movimentosDeEmbaralhamento.join(' ')}`);
+    
+    console.log('\nCubo após embaralhar:');
+    printCubo(cubo.asString());
+    
+    const solucao = buscaEmProfundidadeIterativa(cubo);
+    
+    if (solucao) {
+        console.log('\nCubo resolvido (verificação):');
+        const cuboVerificacao = cubo.clone();
+        solucao.forEach(mov => cuboVerificacao.move(mov));
+        printCubo(cuboVerificacao.asString());
+        console.log('\n\n');
+    }
+  }
+
+  rl.question('\nTestes incrementais finalizados. Aperte Enter para voltar ao menu...', (input) => {
+    mostrarMenu();
+  });
 }
