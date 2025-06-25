@@ -12,14 +12,13 @@ const rl = readline.createInterface({
 
 const movimentosPossiveis = [ "F'", "U", "L", "B'", "D", "U'", "F", "R", "R'", "D'", "B", "L'" ];
 
-// Criar cubo resolvido
 const cuboInicio = new Cube();
 
 mostrarMenu();
 
 function mostrarMenu() {
   console.clear();
-  console.log('=== MENU RUBIK ===');
+  console.log('====== MENU ======');
   console.log('1 - Resolver com BFS');
   console.log('2 - Resolver com  Busca em Profundidade');
   console.log('3 - Sair');
@@ -62,19 +61,13 @@ function perguntarQuantidadeMovimentos() {
 function executarBFS(quantidade){
   console.log('\nCubo resolvido inicial:');
   printCubo(cuboInicio.asString());
-
-  // Embaralhar com N movimentos
-  const N = 2;  // Escolha um N pequeno para BFS funcionar (ex: 3, 4, no máximo 5)
-  //console.log(quantidade);
+  
   embaralharCubo(cuboInicio, quantidade);
 
   console.log('\nCubo após embaralhar:');
   printCubo(cuboInicio.asString());
 
-  // Executar BFS
-  //console.time('BFS');
   const solutionPath = bfs(cuboInicio);
-  //console.timeEnd('BFS');
 
   if (solutionPath) {
     console.log('\nMovimentos para resolver:', solutionPath.join(' '));
@@ -93,9 +86,7 @@ function executarBFS(quantidade){
   }
 }
 
-// Função para embaralhar o cubo com N movimentos aleatórios
 function embaralharCubo(cube, n) {
-  const movimentosPossiveis = ['U', "U'", 'D', "D'", 'L', "L'", 'R', "R'", 'F', "F'", 'B', "B'"];
   let moves = [];
 
   for (let i = 0; i < n; i++) {
@@ -117,12 +108,12 @@ function resolverCubo(cube, passos) {
 
 function getColor(char) {
   switch (char) {
-    case 'U': return chalk.hex('#FFFFFF')(char); // Branco
-    case 'D': return chalk.hex('#FFFF00')(char); // Amarelo
-    case 'F': return chalk.hex('#00FF00')(char); // Verde
-    case 'B': return chalk.hex('#396dfa')(char); // Azul
-    case 'R': return chalk.hex('#FF4500')(char); // Laranja
-    case 'L': return chalk.hex('#eb8934')(char); // Vermelho
+    case 'U': return chalk.hex('#FFFFFF')('\u25A0'); // Branco
+    case 'D': return chalk.hex('#FFFF00')('\u25A0'); // Amarelo
+    case 'F': return chalk.hex('#00FF00')('\u25A0'); // Verde
+    case 'B': return chalk.hex('#396dfa')('\u25A0'); // Azul
+    case 'R': return chalk.hex('#FF4500')('\u25A0'); // Laranja
+    case 'L': return chalk.hex('#eb8934')('\u25A0'); // Vermelho
     default: return char;
   }
 }

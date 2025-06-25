@@ -1,6 +1,6 @@
 const prompt = require('prompt-sync')();
 const process = require('process');
-const Cube = require('cubejs');
+const Cube = require('./cubejs/src/cube');
 
 function obterNomeDoMovimento(numeroDoMovimento) {
     const nomesDeBase = [
