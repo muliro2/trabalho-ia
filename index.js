@@ -1,9 +1,12 @@
 const Cube = require('./cubejs/src/cube');
+const { default: Heap } = require('heap-js');
 const chalk = require('chalk');
 const readline = require('readline');
+const prompt = require('prompt-sync')();
 require('./cubejs/lib/solve');
 const bfs = require('./bfs');
 const { iniciarSolucionador } = require('./buscaProfundidade');
+const { movimentoAleatorio, A_Estrela } = require('./aEstrela');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -22,7 +25,8 @@ function mostrarMenu() {
   console.log('=== MENU RUBIK ===');
   console.log('1 - Resolver com BFS');
   console.log('2 - Resolver com  Busca em Profundidade');
-  console.log('3 - Sair');
+  console.log('3 - Resolver com  A* com heurística');
+  console.log('4 - Sair');
   rl.question('\nEscolha uma opção: ', (resposta) => {
     switch (resposta.trim()) {
       case '1':
@@ -32,6 +36,9 @@ function mostrarMenu() {
         iniciarSolucionador();;
         break;
       case '3':
+        menuAEstrela();;
+        break;
+      case '4':
         console.log('\nSaindo do programa...');
         rl.close();
         process.exit(0);
@@ -91,6 +98,77 @@ function executarBFS(quantidade){
     console.log('Nenhuma solução encontrada.');
     setTimeout(voltarMenu, 3000);
   }
+}
+
+function menuAEstrela() {
+  while (true) {
+
+    console.log("------------------------Menu de Opções------------------------" );
+    console.log("(1) Testar de 1 até N de sua escolha");
+    console.log("(2) Testar até uma quantidade aleatória");
+    console.log("(3) Voltar ao menu inicial");
+    const perguntaCaso = prompt("Escolha o modo: ");
+    console.log("--------------------------------------------------------------");
+
+    if(perguntaCaso === '1'){
+      rl.question('\nDigite a quantidade de movimentos para embaralhar o cubo: ', (input) => {
+      const quantidade = parseInt(input.trim());
+
+      if (isNaN(quantidade) || quantidade <= 0) {
+          console.log('\nPor favor, digite um número válido maior que 0.');
+          voltarMenu();
+      } else {
+          executarAEstrela(quantidade, cuboInicio);
+          rl.question('\nAperte a tecla Enter para voltar ao menu da busca...', (input) => {
+            if(input.length >= 0){
+              setTimeout(menuAEstrela, 1000);
+            }
+          });
+      }
+      });
+      break;
+
+    }else if (perguntaCaso === '2'){
+      executarAEstrela(11, cuboInicio);
+
+      rl.question('\nAperte a tecla Enter para voltar ao menu da busca...', (input) => {
+        if(input.length >= 0){
+          setTimeout(menuAEstrela, 1000);
+        }
+      });
+      break;
+
+    }else if (perguntaCaso === '3'){
+      voltarMenu();
+      break;
+    }else {
+      console.log("Opção inválida. Por favor, digite 1, 2 ou 3.");
+    }
+  }
+}
+
+function executarAEstrela(quantidade, cuboInicial){
+    const heap = new Heap((a, b) => a.f - b.f);
+    const estados_visitados = new Set();
+
+    for (let i = 1; i <= quantidade; i++){
+        console.log("-----------------------------------------------------------------------------------");
+        console.log('\nCubo resolvido inicial:');
+        printCubo(cuboInicial.asString());
+
+        console.log('\n\n');
+        console.log("Quantidade de movimentos: ", i);
+
+        cubo = movimentoAleatorio(i, cuboInicial.clone(), null, movimentosPossiveis);
+        console.log('\nCubo após embaralhar:');
+        printCubo(cubo.asString());
+
+        cubo = A_Estrela(heap, estados_visitados, cubo, movimentosPossiveis);
+
+        console.log('\nCubo resolvido: ');
+        printCubo(cubo);
+        console.log('\n\n');
+    }
 }
 
 // Função para embaralhar o cubo com N movimentos aleatórios
