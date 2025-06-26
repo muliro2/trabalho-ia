@@ -5,7 +5,7 @@ const readline = require('readline');
 const prompt = require('prompt-sync')();
 require('./cubejs/lib/solve');
 const bfs = require('./bfs');
-const { buscaEmProfundidadeIterativa } = require('./buscaProfundidade');
+const { buscaEmProfundidadeIterativa } = require('./buscaProfundidade'); 
 const { movimentoAleatorio, A_Estrela } = require('./aEstrela');
 
 const rl = readline.createInterface({
@@ -29,13 +29,13 @@ function mostrarMenu() {
   rl.question('\nEscolha uma opção: ', (resposta) => {
     switch (resposta.trim()) {
       case '1':
-        perguntarQuantidadeMovimentos();
+        menuBFS();
         break;
       case '2':
         menuBuscaProfundidade();
         break;
       case '3':
-        menuAEstrela();;
+        menuAEstrela();
         break;
       case '4':
         console.log('\nSaindo do programa...');
@@ -53,24 +53,63 @@ function voltarMenu() {
   setTimeout(mostrarMenu, 1500);
 }
 
+function menuBFS() {
+  console.log("\n--- Menu Busca em Profundidade ---");
+  console.log("(1) Modo Incremental (1 a N movimentos)");
+  console.log("(2) Modo Randomizado");
+  console.log("(3) Voltar ao menu inicial");
+  const perguntaCaso = prompt("Escolha o modo: ");
+
+  switch (perguntaCaso) {
+    case '1':
+      const numMovimentos = prompt("Digite a quantidade máxima de movimentos para testar: ");
+      const max = parseInt(numMovimentos);
+      if (isNaN(max) || (max <= 0)) {
+        console.log("Número inválido. Voltando ao menu.");
+        setTimeout(mostrarMenu, 1500);
+      } else {
+        executarBFSIncremental(max);
+      }
+      break;
+    case '2':
+      perguntarQuantidadeMovimentos();
+      //executarBFS(max);
+      break;
+    case '3':
+      mostrarMenu();
+      break;
+    default:
+      console.log("Opção inválida.");
+      setTimeout(menuBFS, 1500);
+      break;
+  }
+}
+
 function perguntarQuantidadeMovimentos() {
   rl.question('\nDigite a quantidade de movimentos para embaralhar o cubo: ', (input) => {
-    const quantidade = parseInt(input.trim());
+    let quantidade = parseInt(input.trim());
     if (isNaN(quantidade) || quantidade <= 0) {
       console.log('\nPor favor, digite um número válido maior que 0.');
       voltarMenu();
     } else {
-      executarBFS(quantidade);
+      executarBFS([], false, quantidade);
     }
   });
 }
 
-function executarBFS(quantidade){
+function executarBFS(movimentos, isIncremental = false, quantidade){
   console.log('\nCubo resolvido inicial:');
   printCubo(cuboInicio.asString());
- 
-  embaralharCubo(cuboInicio, quantidade);
-
+  
+  if(isIncremental){
+    //console.log('ENTROU');
+    movimentos.forEach(movimento => {
+    cuboInicio.move(movimento);
+  });
+  } else if(quantidade > 0){
+    embaralharCubo(cuboInicio, quantidade);
+  }
+  
   console.log('\nCubo após embaralhar:');
   printCubo(cuboInicio.asString());
 
@@ -81,16 +120,36 @@ function executarBFS(quantidade){
     console.log('\nCubo resolvido: ');
     resolverCubo(cuboInicio, solutionPath);
     printCubo(cuboInicio.asString());
-    rl.question('\nAperte a tecla Enter para voltar ao menu...', (input) => {
+    console.log('-------------------------------------------------------------------------------------------');
+    
+    if(!isIncremental){
+      rl.question('\nAperte a tecla Enter para voltar ao menu...\n', (input) => {
       if(input.length >= 0){
         setTimeout(voltarMenu, 1000);
       }
-    });
-
+  });
+    }
   } else {
     console.log('Nenhuma solução encontrada.');
     setTimeout(voltarMenu, 3000);
   }
+}
+
+function executarBFSIncremental(max){
+  let movimentos = [];
+  
+  for (let i = 0; i < max; i++) {
+
+    movimentos.push(movimentosPossiveis[Math.floor(Math.random() * movimentosPossiveis.length)]);
+    executarBFS(movimentos, true);
+  }
+
+  rl.question('\nAperte a tecla Enter para voltar ao menu...', (input) => {
+      if(input.length >= 0){
+        setTimeout(voltarMenu, 1000);
+      }
+  });
+
 }
 
 function menuAEstrela() {
@@ -235,7 +294,7 @@ function menuBuscaProfundidade() {
   console.log("(2) Modo Randomizado");
   console.log("(3) Voltar ao menu inicial");
   const perguntaCaso = prompt("Escolha o modo: ");
- 
+  
   switch (perguntaCaso) {
     case '1':
       const numMovimentos = prompt("Digite a quantidade máxima de movimentos para testar: ");
@@ -267,14 +326,14 @@ function executarBuscaIterativa(maxMovimentos) {
 
   for (let i = 1; i <= maxMovimentos; i++) {
     console.log("-----------------------------------------------------------------------------------");
-   
-    const cubo = new Cube();
-   
+    
+    const cubo = new Cube(); 
+    
     console.log('\nCubo resolvido inicial:');
-    printCubo(cubo.asString());
-   
+    printCubo(cubo.asString()); 
+    
     console.log(`\n\nQuantidade de movimentos para embaralhar: ${i}`);
-   
+    
     let movimentosDeEmbaralhamento = [];
     for (let j = 0; j < i; j++) {
         const movimentoAleatorio = Math.floor(Math.random() * 18);
@@ -283,12 +342,12 @@ function executarBuscaIterativa(maxMovimentos) {
     }
 
     console.log(`\nCubo embaralhado com os movimentos: ${movimentosDeEmbaralhamento.join(' ')}`);
-   
+    
     console.log('\nCubo após embaralhar:');
     printCubo(cubo.asString());
-   
+    
     const solucao = buscaEmProfundidadeIterativa(cubo);
-   
+    
     if (solucao) {
         console.log('\nCubo resolvido (verificação):');
         const cuboVerificacao = cubo.clone();
