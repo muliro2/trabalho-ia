@@ -191,7 +191,8 @@ function menuAEstrela() {
       break;
 
     }else if (perguntaCaso === '2'){
-      executarAEstrela(11, cuboInicio);
+      const nAleatorio = Math.floor(Math.random() * 11) + 1;
+      executarAEstrela(nAleatorio, cuboInicio);
 
       rl.question('\nAperte a tecla Enter para voltar ao menu da busca...', (input) => {
         if(input.length >= 0){
