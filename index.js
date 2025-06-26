@@ -248,8 +248,9 @@ function menuBuscaProfundidade() {
       }
       break;
     case '2':
-      console.log("Modo Randomizado ainda não implementado neste menu.");
-      setTimeout(menuBuscaProfundidade, 1500);
+      const maxProfundidadeAleatoria = 20; 
+      console.log(`\nIniciando modo randomizado. Será feito um único teste com uma quantidade aleatória de movimentos (entre 1 e ${maxProfundidadeAleatoria}).`);
+      executarBuscaProfundidadeRandomica(maxProfundidadeAleatoria);
       break;
     case '3':
       mostrarMenu();
@@ -299,5 +300,44 @@ function executarBuscaIterativa(maxMovimentos) {
 
   rl.question('\nTestes incrementais finalizados. Aperte Enter para voltar ao menu...', (input) => {
     mostrarMenu();
+  });
+}
+
+function executarBuscaProfundidadeRandomica(quantidadeMaximaMovimentos) {
+  const { obterNomeDoMovimento } = require('./buscaProfundidade.js');
+
+  console.log("-----------------------------------------------------------------------------------");
+  
+  const cubo = new Cube();
+  console.log('\nCubo resolvido inicial:');
+  printCubo(cubo.asString());
+
+  const quantidadeMovimentos = Math.floor(Math.random() * quantidadeMaximaMovimentos) + 1;
+  console.log(`\n\nEmbaralhando o cubo com ${quantidadeMovimentos} movimentos aleatórios...`);
+
+  let movimentosDeEmbaralhamento = [];
+  for (let j = 0; j < quantidadeMovimentos; j++) {
+      const movimentoAleatorioIdx = Math.floor(Math.random() * 18);
+      const nomeMovimento = obterNomeDoMovimento(movimentoAleatorioIdx);
+      movimentosDeEmbaralhamento.push(nomeMovimento);
+      cubo.move(nomeMovimento);
+  }
+
+  console.log(`\nCubo embaralhado com os movimentos: ${movimentosDeEmbaralhamento.join(' ')}`);
+  console.log('\nCubo após embaralhar:');
+  printCubo(cubo.asString());
+
+  const solucao = buscaEmProfundidadeIterativa(cubo);
+  
+  if (solucao) {
+      console.log('\nCubo resolvido (verificação):');
+      const cuboVerificacao = cubo.clone();
+      solucao.forEach(movIdx => cuboVerificacao.move(obterNomeDoMovimento(movIdx)));
+      printCubo(cuboVerificacao.asString());
+      console.log('\n\n');
+  }
+
+  rl.question('\nTeste finalizado. Aperte Enter para voltar ao menu da busca...', (input) => {
+    menuBuscaProfundidade();
   });
 }
