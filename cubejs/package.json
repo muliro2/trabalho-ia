@@ -29,6 +29,7 @@
   ],
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "build": "gulp",
     "test": "gulp test",
     "test:auto": "gulp test:auto",
