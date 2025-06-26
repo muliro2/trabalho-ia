@@ -5,7 +5,7 @@ const readline = require('readline');
 const prompt = require('prompt-sync')();
 require('./cubejs/lib/solve');
 const bfs = require('./bfs');
-const { buscaEmProfundidadeIterativa } = require('./buscaProfundidade'); 
+const { buscaEmProfundidadeIterativa } = require('./buscaProfundidade');
 const { movimentoAleatorio, A_Estrela } = require('./aEstrela');
 
 const rl = readline.createInterface({
@@ -68,7 +68,7 @@ function perguntarQuantidadeMovimentos() {
 function executarBFS(quantidade){
   console.log('\nCubo resolvido inicial:');
   printCubo(cuboInicio.asString());
-  
+ 
   embaralharCubo(cuboInicio, quantidade);
 
   console.log('\nCubo após embaralhar:');
@@ -235,7 +235,7 @@ function menuBuscaProfundidade() {
   console.log("(2) Modo Randomizado");
   console.log("(3) Voltar ao menu inicial");
   const perguntaCaso = prompt("Escolha o modo: ");
-  
+ 
   switch (perguntaCaso) {
     case '1':
       const numMovimentos = prompt("Digite a quantidade máxima de movimentos para testar: ");
@@ -267,14 +267,14 @@ function executarBuscaIterativa(maxMovimentos) {
 
   for (let i = 1; i <= maxMovimentos; i++) {
     console.log("-----------------------------------------------------------------------------------");
-    
-    const cubo = new Cube(); 
-    
+   
+    const cubo = new Cube();
+   
     console.log('\nCubo resolvido inicial:');
-    printCubo(cubo.asString()); 
-    
+    printCubo(cubo.asString());
+   
     console.log(`\n\nQuantidade de movimentos para embaralhar: ${i}`);
-    
+   
     let movimentosDeEmbaralhamento = [];
     for (let j = 0; j < i; j++) {
         const movimentoAleatorio = Math.floor(Math.random() * 18);
@@ -283,12 +283,12 @@ function executarBuscaIterativa(maxMovimentos) {
     }
 
     console.log(`\nCubo embaralhado com os movimentos: ${movimentosDeEmbaralhamento.join(' ')}`);
-    
+   
     console.log('\nCubo após embaralhar:');
     printCubo(cubo.asString());
-    
+   
     const solucao = buscaEmProfundidadeIterativa(cubo);
-    
+   
     if (solucao) {
         console.log('\nCubo resolvido (verificação):');
         const cuboVerificacao = cubo.clone();
