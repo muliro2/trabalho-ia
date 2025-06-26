@@ -5,29 +5,25 @@ function bfs(cuboInicio) {
   let fila = [{ cube: cuboInicio, moves: [] }];
   let visitado = new Set();
   let nosExpandidos = 0;
-  let tamanhoMaxFila = 0;
   let totalFilhosGerados = 0;
   let totalNosInternos = 0
   let tamanhoMaxFilaKB = 0;
 
   while (fila.length > 0) {
     nosExpandidos++;
-    let tamanhoFilaKB = Buffer.byteLength(JSON.stringify(fila), 'utf8') / 1024;
+    let tamanhoFilaKB = process.memoryUsage().heapUsed /1024;
 
     if (tamanhoFilaKB > tamanhoMaxFilaKB){
       tamanhoMaxFilaKB = tamanhoFilaKB;
     }
     
-    if (fila.length > tamanhoMaxFila){
-      tamanhoMaxFila = fila.length;
-    }
     let { cube, moves } = fila.shift();
 
     if (cube.isSolved()) {
 
       console.log('\nSolução encontrada!');
       console.log('Passos:', moves.length);
-      console.log(`Tamanho máximo da fila: ${tamanhoMaxFila}`);
+      console.log(`Tamanho máximo da fila: ${tamanhoMaxFilaKB.toFixed(2)} KB`);
       console.log('Nós expandidos:', nosExpandidos); 
       console.log('Fator de ramificação média: ', totalNosInternos > 0 ? (totalFilhosGerados / totalNosInternos).toFixed(2) : 0);
       console.timeEnd('Tempo total: ');
