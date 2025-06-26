@@ -25,11 +25,12 @@ function mostrarMenu() {
   console.log('1 - Resolver com BFS');
   console.log('2 - Resolver com  Busca em Profundidade');
   console.log('3 - Resolver com  A* com heurística');
-  console.log('4 - Sair');
+  console.log('4 - Resolver com as três buscas');
+  console.log('5 - Sair');
   rl.question('\nEscolha uma opção: ', (resposta) => {
     switch (resposta.trim()) {
       case '1':
-        perguntarQuantidadeMovimentos();
+        perguntarQuantidadeMovimentos(true);
         break;
       case '2':
         menuBuscaProfundidade();
@@ -38,6 +39,9 @@ function mostrarMenu() {
         menuAEstrela();;
         break;
       case '4':
+        perguntarQuantidadeMovimentos(false);
+        break;
+      case '5':
         console.log('\nSaindo do programa...');
         rl.close();
         process.exit(0);
@@ -53,14 +57,20 @@ function voltarMenu() {
   setTimeout(mostrarMenu, 1500);
 }
 
-function perguntarQuantidadeMovimentos() {
+function perguntarQuantidadeMovimentos(bfs) {
   rl.question('\nDigite a quantidade de movimentos para embaralhar o cubo: ', (input) => {
     const quantidade = parseInt(input.trim());
     if (isNaN(quantidade) || quantidade <= 0) {
       console.log('\nPor favor, digite um número válido maior que 0.');
       voltarMenu();
     } else {
-      executarBFS(quantidade);
+      if (bfs) {
+        executarBFS(quantidade);
+      } else {
+        const cubo = cuboInicio.clone();
+        embaralharCubo(cubo, quantidade);
+        executarBuscas(cubo);
+      }
     }
   });
 }
@@ -141,27 +151,80 @@ function menuAEstrela() {
 }
 
 function executarAEstrela(quantidade, cuboInicial){
+  const heap = new Heap((a, b) => a.f - b.f);
+  const estados_visitados = new Set();
+
+  for (let i = 1; i <= quantidade; i++){
+    console.log("-----------------------------------------------------------------------------------");
+    console.log('\nCubo resolvido inicial:');
+    printCubo(cuboInicial.asString());
+
+    console.log('\n\n');
+    console.log("Quantidade de movimentos: ", i);
+
+    cubo = movimentoAleatorio(i, cuboInicial.clone(), null, movimentosPossiveis);
+    console.log('\nCubo após embaralhar:');
+    printCubo(cubo.asString());
+
+    cubo = A_Estrela(heap, estados_visitados, cubo, movimentosPossiveis).cube;
+
+    console.log('\nCubo resolvido: ');
+    printCubo(cubo);
+    console.log('\n\n');
+  }
+}
+
+function executarBuscas(cubo){
+  while (true) {
+    let bfsCubo = cubo.clone();
+    let dfsCubo = cubo.clone();
+    let aStarCubo = cubo.clone();
+    
+    console.log("------------------------Busca A* com heurística------------------------" );
     const heap = new Heap((a, b) => a.f - b.f);
     const estados_visitados = new Set();
+    cuboResolvido = A_Estrela(heap, estados_visitados, aStarCubo, movimentosPossiveis);
 
-    for (let i = 1; i <= quantidade; i++){
-        console.log("-----------------------------------------------------------------------------------");
-        console.log('\nCubo resolvido inicial:');
-        printCubo(cuboInicial.asString());
+    console.log('\nCubo resolvido: ');
+    printCubo(cuboResolvido.cube);
+    console.log('\n\n');
 
-        console.log('\n\n');
-        console.log("Quantidade de movimentos: ", i);
-
-        cubo = movimentoAleatorio(i, cuboInicial.clone(), null, movimentosPossiveis);
-        console.log('\nCubo após embaralhar:');
-        printCubo(cubo.asString());
-
-        cubo = A_Estrela(heap, estados_visitados, cubo, movimentosPossiveis);
-
-        console.log('\nCubo resolvido: ');
-        printCubo(cubo);
-        console.log('\n\n');
+    console.log("------------------------Busca em profundidade iterativa------------------------" );
+    const solucao = buscaEmProfundidadeIterativa(dfsCubo);
+      
+    if (solucao) {
+      const cuboVerificacao = dfsCubo.clone();
+      solucao.forEach(mov => cuboVerificacao.move(mov));
+      console.log('\nCubo resolvido: ');
+      printCubo(cuboVerificacao.asString());
+      console.log('\n\n');        
     }
+
+    console.log("------------------------Busca em largura------------------------" );
+    const solutionPath = bfs(bfsCubo);
+
+    console.log('\nMovimentos para resolver:', solutionPath.join(' '));
+    console.log('\nCubo resolvido: ');
+    resolverCubo(bfsCubo, solutionPath);
+    printCubo(bfsCubo.asString());
+    console.log('\n\n');
+
+    console.log("------------------------Menu de Opções------------------------" );
+    console.log("(1) Testar um novo número de movimentos");
+    console.log("(2) Voltar ao menu inicial");
+    const perguntaCaso = prompt("Escolha o modo: ");
+    console.log("--------------------------------------------------------------");
+    
+    if(perguntaCaso === '1'){
+      perguntarQuantidadeMovimentos(false);
+      break;
+    } else if (perguntaCaso === '2'){
+      voltarMenu();
+      break;
+    } else {
+      console.log("Opção inválida. Por favor, digite 1 ou 2.");
+    }
+  }
 }
 
 // Função para embaralhar o cubo com N movimentos aleatórios

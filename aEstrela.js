@@ -77,7 +77,7 @@ function A_Estrela(heap, estados_visitados, cubo, movimentos){
             heap.clear();
             estados_visitados.clear();
 
-            return estado_prioritario.cube;
+            return estado_prioritario;
         }
         expandindoNoPrioritario(estado_prioritario, movimentos, estados_visitados, heap, metricas)
         rastreadorDeMemoria();
