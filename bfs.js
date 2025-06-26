@@ -1,7 +1,7 @@
 const Cube = require('./cubejs/src/cube');
 
 function bfs(cuboInicio) {
-  console.time('Tempo total: ');
+  console.time('Total de tempo gasto para achar a solução: ');
   let fila = [{ cube: cuboInicio, moves: [] }];
   let visitado = new Set();
   let nosExpandidos = 0;
@@ -22,11 +22,12 @@ function bfs(cuboInicio) {
     if (cube.isSolved()) {
 
       console.log('\nSolução encontrada!');
-      console.log('Passos:', moves.length);
-      console.log(`Tamanho máximo da fila: ${tamanhoMaxFilaKB.toFixed(2)} KB`);
-      console.log('Nós expandidos:', nosExpandidos); 
+      console.log("\n--- Métricas do Relatório --------------------------------------------------");
+      console.log('Quantidade de passos de sua solução:', moves.length);
+      console.timeEnd('Total de tempo gasto para achar a solução: ');
+      console.log('Quantidade de nós expandidos:', nosExpandidos); 
+      console.log(`Quantidade máxima de memória utilizada (memoria alocada): ${(tamanhoMaxFilaKB /1024).toFixed(2)} MB`);
       console.log('Fator de ramificação média: ', totalNosInternos > 0 ? (totalFilhosGerados / totalNosInternos).toFixed(2) : 0);
-      console.timeEnd('Tempo total: ');
       return moves;
     }
 
